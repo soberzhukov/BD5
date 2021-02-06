@@ -33,10 +33,20 @@ WHERE genre_group.genre_id IN (SELECT COUNT(genre_group.genre_id) FROM genre_gro
 GROUP BY group_id HAVING COUNT(genre_group.genre_id) >= 2);
 
 SELECT track.name FROM track
-WHERE track.id NOT IN (SELECT track_id FROM collection_track)
+WHERE track.id NOT IN (SELECT track_id FROM collection_track);
 
 SELECT music_group.name FROM music_group
 JOIN group_album ON music_group.id = group_album.group_id
 JOIN album ON group_album.album_id = album.id
 JOIN track ON album.id = track.albom_id
-WHERE track.duration in (SELECT MIN(track.duration) FROM track)
+WHERE track.duration in (SELECT MIN(track.duration) FROM track);
+
+SELECT album.name FROM album
+JOIN track ON album.id = track.albom_id
+WHERE track.albom_id IN
+(SELECT track.albom_id FROM track
+GROUP BY track.albom_id
+HAVING COUNT(track.name) IN (SELECT COUNT(track.name) FROM track
+GROUP BY track.albom_id
+ORDER BY COUNT(track.name)
+LIMIT 1))
