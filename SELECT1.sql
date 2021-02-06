@@ -25,10 +25,18 @@ JOIN group_album ON album.id = group_album.album_id
 JOIN music_group ON group_album.group_id = music_group.id
 WHERE music_group.name = 'rammstein';
 
-
-SELECT album.name, genre_id FROM album
+SELECT album.name FROM album
 JOIN group_album ON album.id = group_album.album_id
 JOIN music_group ON group_album.group_id = music_group.id
 JOIN genre_group ON music_group.id = genre_group.group_id
-WHERE (SELECT genre_id, COUNT(group_id) FROM genre_group
-GROUP BY genre_id WHERE group_id >= 2) 
+WHERE genre_group.genre_id IN (SELECT COUNT(genre_group.genre_id) FROM genre_group
+GROUP BY group_id HAVING COUNT(genre_group.genre_id) >= 2);
+
+SELECT track.name FROM track
+WHERE track.id NOT IN (SELECT track_id FROM collection_track)
+
+SELECT music_group.name FROM music_group
+JOIN group_album ON music_group.id = group_album.group_id
+JOIN album ON group_album.album_id = album.id
+JOIN track ON album.id = track.albom_id
+WHERE track.duration in (SELECT MIN(track.duration) FROM track)
